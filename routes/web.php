@@ -16,7 +16,6 @@ Route::get('/help','StaticPagesController@help')->name('help');
 Route::get('/about','StaticPagesController@about')->name('about');
 
 Route::get('signup','UsersController@create')->name('signup');
-
 /*这一段代码与下面的一句代码功能相同
 Route::get('/users', 'UsersController@index')->name('users.index');
 Route::get('/users/{user}', 'UsersController@show')->name('users.show');
@@ -27,3 +26,7 @@ Route::patch('/users/{user}', 'UsersController@update')->name('users.update');
 Route::delete('/users/{user}', 'UsersController@destroy')->name('users.destroy');
 */
 Route::resource('users','UsersController');
+
+Route::get('login','SessionController@create')->name('login');
+Route::post('login','SessionController@store')->name('login');
+Route::delete('logout','SessionController@destroy')->name('logout');
