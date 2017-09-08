@@ -8,6 +8,15 @@ use Auth;
 
 class SessionController extends Controller
 {
+    public function __construct()
+    {
+        //默认不设置的情况下是所有用户都能访问所有方法，进入到任何页面
+        //只有未登录用户才能访问create方法进入登录页面，已登录用户不能访问
+        $this->middleware('guest',[
+            'only'=>['create']
+        ]);
+    }
+
     public function create()
     {
         return view('sessions.create');
@@ -26,7 +35,8 @@ class SessionController extends Controller
         if(Auth::attempt($credentials, $request->has('remember'))){// 判断该用户存在于数据库，且邮箱和密码相符合
             //登陆成功
             session()->flash('success','欢迎回来!');
-            return redirect()->route('users.show',[Auth::user()]);
+            //intended方法会把路由定向到上一次请求的页面，如果没有则进入用户信息显示页面
+            return redirect()->intended(route('users.show',[Auth::user()]));
         }else{
             //登陆失败
             session()->flash('danger','很抱歉您的邮箱和密码不匹配');
