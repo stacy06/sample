@@ -33,10 +33,16 @@ class SessionController extends Controller
             'password'=>$request->password
         ];
         if(Auth::attempt($credentials, $request->has('remember'))){// 判断该用户存在于数据库，且邮箱和密码相符合
-            //登陆成功
-            session()->flash('success','欢迎回来!');
-            //intended方法会把路由定向到上一次请求的页面，如果没有则进入用户信息显示页面
-            return redirect()->intended(route('users.show',[Auth::user()]));
+            if(Auth::user()->activated){
+                //登陆成功
+                session()->flash('success','欢迎回来!');
+                //intended方法会把路由定向到上一次请求的页面，如果没有则进入用户信息显示页面
+                return redirect()->intended(route('users.show',[Auth::user()]));
+            }else{
+                Auth::logout();
+                session()->flash('warning', '您的账号未激活，请检查邮箱中的注册邮件并进行激活后登陆');
+                return redirect()->back();
+            }
         }else{
             //登陆失败
             session()->flash('danger','很抱歉您的邮箱和密码不匹配');
