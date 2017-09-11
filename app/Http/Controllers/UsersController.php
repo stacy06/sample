@@ -13,7 +13,7 @@ class UsersController extends Controller
     {
         //除了用户信息展示、注册和保存功能，用户相关的其他的路由功能都需要用户登陆后才能访问
         $this->middleware('auth',[
-            'except'=>['create','store']  //'show',用户信息展示感觉应该也不让访问所以拿出来了
+            'except'=>['create','store','index','show']
         ]);
         //只有未登录用户才能访问注册页面，已登录用户则不能访问
         $this->middleware('guest',[
@@ -74,5 +74,19 @@ class UsersController extends Controller
         session()->flash('success','用户信息更新成功');
         //return redirect()->route('users.show',$user->id);
         return redirect()->route('users.show',$user);
+    }
+
+    public function index()
+    {
+        $users = User::paginate(10);
+        return view('users.index',compact('users'));
+    }
+
+    public function destroy(User $user)
+    {
+        $this->authorize('destroy', $user);
+        $user->delete();
+        session()->flash('success','成功删除用户！');
+        return back();
     }
 }
