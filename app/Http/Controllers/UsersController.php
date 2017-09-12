@@ -62,7 +62,8 @@ class UsersController extends Controller
 
     public function show(User $user)
     {
-        return view('users.show', compact('user'));
+        $statuses = $user->statuses()->orderBy('created_at', 'desc')->paginate(30);
+        return view('users.show', compact('user','statuses'));
     }
 
     public function edit(User $user)
@@ -108,11 +109,11 @@ class UsersController extends Controller
     public function confirmEmail($token)
     {
         $user = User::where('activation_token', $token)->firstOrFail();
-
+        //修改数据库数据，激活账户
         $user->activated = true;
         $user->activation_token = null;
         $user->save();
-
+        //登陆
         Auth::login($user);
         session()->flash('success', '恭喜您，账户激活成功！');
         return redirect()->route('users.show', $user);
